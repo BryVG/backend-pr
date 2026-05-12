@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SuppliersModule } from './suppliers/suppliers.module';
+import { BuyersModule } from './buyers/buyers.module';
+import { PurchaseOrdersModule } from './purchase-orders/purchase-orders.module';
+import { PurchaseItemsModule } from './purchase-items/purchase-items.module';
+import { FraudAnalysisModule } from './fraud-analysis/fraud-analysis.module';
 
 @Module({
-  imports: [],
+  imports: [SuppliersModule, BuyersModule, PurchaseOrdersModule, PurchaseItemsModule, FraudAnalysisModule],
   controllers: [AppController],
   providers: [AppService],
 })
