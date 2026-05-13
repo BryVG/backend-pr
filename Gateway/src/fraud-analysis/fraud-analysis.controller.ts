@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { FraudAnalysisService } from './fraud-analysis.service';
-import { CreateFraudAnalysisDto } from './dto/create-fraud-analysis.dto';
-import { UpdateFraudAnalysisDto } from './dto/update-fraud-analysis.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body
+} from '@nestjs/common'
 
-@Controller('fraud-analysis')
+import { FraudAnalysisService } from './fraud-analysis.service'
+import { CreateFraudAnalysisDto } from './dto/create-fraud-analysis.dto'
+import { UpdateFraudAnalysisDto } from './dto/update-fraud-analysis.dto'
+@Controller('fraudanalysis')
 export class FraudAnalysisController {
-  constructor(private readonly fraudAnalysisService: FraudAnalysisService) {}
+
+  constructor(
+    private readonly fraudAnalysisService: FraudAnalysisService
+  ) {}
 
   @Post()
-  create(@Body() createFraudAnalysisDto: CreateFraudAnalysisDto) {
-    return this.fraudAnalysisService.create(createFraudAnalysisDto);
+  create(
+    @Body() body: CreateFraudAnalysisDto
+  ) {
+    return this.fraudAnalysisService.create(body)
   }
 
   @Get()
   findAll() {
-    return this.fraudAnalysisService.findAll();
+    return this.fraudAnalysisService.findAll()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fraudAnalysisService.findOne(+id);
+  findOne(
+    @Param('id') id: string
+  ) {
+    return this.fraudAnalysisService.findOne(Number(id))
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFraudAnalysisDto: UpdateFraudAnalysisDto) {
-    return this.fraudAnalysisService.update(+id, updateFraudAnalysisDto);
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateFraudAnalysisDto
+  ) {
+    return this.fraudAnalysisService.update(
+      Number(id),
+      body
+    )
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fraudAnalysisService.remove(+id);
+  remove(
+    @Param('id') id: string
+  ) {
+    return this.fraudAnalysisService.remove(Number(id))
   }
 }

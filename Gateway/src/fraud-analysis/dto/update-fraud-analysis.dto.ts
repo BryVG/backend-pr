@@ -1,4 +1,27 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFraudAnalysisDto } from './create-fraud-analysis.dto';
+import {
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsString,
+  Length
+} from 'class-validator'
 
-export class UpdateFraudAnalysisDto extends PartialType(CreateFraudAnalysisDto) {}
+export class UpdateFraudAnalysisDto {
+
+  @IsOptional()
+  @IsNumber()
+  purchaseItemId?: number
+
+  @IsOptional()
+  @IsNumber()
+  fraudScore?: number
+
+  @IsOptional()
+  @IsBoolean()
+  suspicious?: boolean
+
+  @IsOptional()
+  @IsString()
+  @Length(2, 500)
+  reason?: string
+}

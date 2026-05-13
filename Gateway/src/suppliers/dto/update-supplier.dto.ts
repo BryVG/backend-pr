@@ -1,4 +1,13 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateSupplierDto } from './create-supplier.dto';
+import {
+  IsOptional,
+  IsString,
+  Length
+} from 'class-validator'
 
-export class UpdateSupplierDto extends PartialType(CreateSupplierDto) {}
+export class UpdateSupplierDto {
+
+  @IsOptional()
+  @IsString()
+  @Length(2, 100)
+  name?: string
+}

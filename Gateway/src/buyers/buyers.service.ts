@@ -16,8 +16,8 @@ export class BuyersService {
   findAll() {
     return this.prisma.buyer.findMany({
       include: {
-        items: true
-      }
+     orders: true
+}
     })
   }
 
