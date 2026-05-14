@@ -1,5 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import {PrismaService} from '../prisma/PrismaService'
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException
+} from '@nestjs/common'
+
+import { PrismaService } from '../../prisma/Prisma.service'
+
+import { CreateBuyerDto } from './dto/create-buyer.dto'
+import { UpdateBuyerDto } from './dto/update-buyer.dto'
 
 @Injectable()
 export class BuyersService {
@@ -7,38 +15,89 @@ export class BuyersService {
     private prisma: PrismaService
   ) {}
 
-  create(data: any) {
+  async create(data: CreateBuyerDto) {
+
+    const existingBuyer =
+      await this.prisma.buyer.findFirst({
+        where: {
+          name: data.name
+        }
+      })
+
+    if (existingBuyer) {
+      throw new BadRequestException(
+        'Buyer already exists'
+      )
+    }
+
     return this.prisma.buyer.create({
       data
     })
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.buyer.findMany({
       include: {
-     orders: true
-}
-    })
-  }
-
-  findOne(id: number) {
-    return this.prisma.buyer.findUnique({
-      where: { id },
-
-      include: {
-        items: true
+        orders: true
       }
     })
   }
 
-  update(id: number, data: any) {
+  async findOne(id: number) {
+
+    const buyer =
+      await this.prisma.buyer.findUnique({
+        where: { id },
+
+        include: {
+          orders: true
+        }
+      })
+
+    if (!buyer) {
+      throw new NotFoundException(
+        'Buyer not found'
+      )
+    }
+
+    return buyer
+  }
+
+  async update(
+    id: number,
+    data: UpdateBuyerDto
+  ) {
+
+    const buyer =
+      await this.prisma.buyer.findUnique({
+        where: { id }
+      })
+
+    if (!buyer) {
+      throw new NotFoundException(
+        'Buyer not found'
+      )
+    }
+
     return this.prisma.buyer.update({
       where: { id },
       data
     })
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+
+    const buyer =
+      await this.prisma.buyer.findUnique({
+        where: { id }
+      })
+
+    if (!buyer) {
+      throw new NotFoundException(
+        'Buyer not found'
+      )
+    }
+
     return this.prisma.buyer.delete({
       where: { id }
     })

@@ -11,7 +11,8 @@ import {
 import { FraudAnalysisService } from './fraud-analysis.service'
 import { CreateFraudAnalysisDto } from './dto/create-fraud-analysis.dto'
 import { UpdateFraudAnalysisDto } from './dto/update-fraud-analysis.dto'
-@Controller('fraudanalysis')
+import { ParseIntPipe } from '@nestjs/common'
+@Controller('fraud-analysis')
 export class FraudAnalysisController {
 
   constructor(
@@ -32,14 +33,16 @@ export class FraudAnalysisController {
 
   @Get(':id')
   findOne(
-    @Param('id') id: string
+    @Param('id', ParseIntPipe)
+    id: number,
   ) {
     return this.fraudAnalysisService.findOne(Number(id))
   }
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe)
+    id: number,
     @Body() body: UpdateFraudAnalysisDto
   ) {
     return this.fraudAnalysisService.update(
@@ -50,7 +53,8 @@ export class FraudAnalysisController {
 
   @Delete(':id')
   remove(
-    @Param('id') id: string
+    @Param('id', ParseIntPipe)
+    id: number
   ) {
     return this.fraudAnalysisService.remove(Number(id))
   }

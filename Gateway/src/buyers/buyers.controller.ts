@@ -10,6 +10,7 @@ import {
 import { CreateBuyerDto } from './dto/create-buyer.dto' 
 import { UpdateBuyerDto } from './dto/update-buyer.dto' 
 import { BuyersService } from './buyers.service'
+import { ParseIntPipe } from '@nestjs/common' 
 
 @Controller('buyers')
 export class BuyersController {
@@ -32,14 +33,14 @@ export class BuyersController {
 
   @Get(':id')
   findOne(
-    @Param('id') id: string
+    @Param('id', ParseIntPipe) id: number
   ) {
     return this.buyersService.findOne(Number(id))
   }
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateBuyerDto
   ) {
     return this.buyersService.update(
@@ -50,7 +51,7 @@ export class BuyersController {
 
   @Delete(':id')
   remove(
-    @Param('id') id: string
+    @Param('id', ParseIntPipe) id: number
   ) {
     return this.buyersService.remove(Number(id))
   }

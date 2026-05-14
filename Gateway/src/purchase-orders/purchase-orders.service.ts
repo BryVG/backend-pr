@@ -1,46 +1,122 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
-import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException
+} from '@nestjs/common'
+
+import { PrismaService }
+from '../../prisma/Prisma.service'
+
+import { CreatePurchaseOrderDto }
+from './dto/create-purchase-order.dto'
+
+import { UpdatePurchaseOrderDto }
+from './dto/update-purchase-order.dto'
 
 @Injectable()
 export class PurchaseOrdersService {
+
   constructor(
     private prisma: PrismaService
   ) {}
 
-  create(data: any) {
-    return this.prisma.purchase-order.create({
+  async create(
+    data: CreatePurchaseOrderDto
+  ) {
+
+    const existingOrder =
+      await this.prisma.purchaseOrder.findFirst({
+        where: {
+          buyerId: data.buyerId,
+          supplierId: data.supplierId
+        }
+      })
+
+    if (existingOrder) {
+      throw new BadRequestException(
+        'Purchase order already exists'
+      )
+    }
+
+    return this.prisma.purchaseOrder.create({
       data
     })
   }
 
-  findAll() {
-    return this.prisma.purchase-order.findMany({
+  async findAll() {
+
+    return this.prisma.purchaseOrder.findMany({
       include: {
+        buyer: true,
+        supplier: true,
         items: true
       }
     })
   }
 
-  findOne(id: number) {
-    return this.prisma.purchase-order.findUnique({
-      where: { id },
+  async findOne(id: number) {
 
+    const purchaseOrder =
+      await this.prisma.purchaseOrder.findUnique({
+        where: { id },
+
+        include: {
+          buyer: true,
+          supplier: true,
+          items: {
       include: {
-        items: true
-      }
-    })
+      product: true,
+      fraudAnalysis: true
+    }
+  }
+}
+      })
+
+    if (!purchaseOrder) {
+      throw new NotFoundException(
+        'Purchase order not found'
+      )
+    }
+
+    return purchaseOrder
   }
 
-  update(id: number, data: any) {
-    return this.prisma.purchase-order.update({
+  async update(
+    id: number,
+    data: UpdatePurchaseOrderDto
+  ) {
+
+    const purchaseOrder =
+      await this.prisma.purchaseOrder.findUnique({
+        where: { id }
+      })
+
+    if (!purchaseOrder) {
+      throw new NotFoundException(
+        'Purchase order not found'
+      )
+    }
+
+    return this.prisma.purchaseOrder.update({
       where: { id },
       data
     })
   }
 
-  remove(id: number) {
-    return this.prisma.purchase-order.delete({
+  async remove(id: number) {
+
+    const purchaseOrder =
+      await this.prisma.purchaseOrder.findUnique({
+        where: { id }
+      })
+
+    if (!purchaseOrder) {
+      throw new NotFoundException(
+        'Purchase order not found'
+      )
+    }
+
+    return this.prisma.purchaseOrder.delete({
       where: { id }
     })
   }

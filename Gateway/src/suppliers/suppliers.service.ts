@@ -1,43 +1,111 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service'
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException
+} from '@nestjs/common'
+
+import { PrismaService }
+from '../../prisma/Prisma.service'
+
+import { CreateSupplierDto }
+from './dto/create-supplier.dto'
+
+import { UpdateSupplierDto }
+from './dto/update-supplier.dto'
 
 @Injectable()
 export class SuppliersService {
+
   constructor(
     private prisma: PrismaService
   ) {}
-  create(data: any) {
+
+  async create(
+    data: CreateSupplierDto
+  ) {
+
+    const existingSupplier =
+      await this.prisma.supplier.findFirst({
+        where: {
+          name: data.name
+        }
+      })
+
+    if (existingSupplier) {
+      throw new BadRequestException(
+        'Supplier already exists'
+      )
+    }
+
     return this.prisma.supplier.create({
       data
     })
   }
 
-  findAll() {
+  async findAll() {
+
     return this.prisma.supplier.findMany({
       include: {
-        items: true
+        orders: true
       }
     })
   }
 
-  findOne(id: number) {
-    return this.prisma.supplier.findUnique({
-      where: { id },
+  async findOne(id: number) {
 
-      include: {
-        items: true
-      }
-    })
+    const supplier =
+      await this.prisma.supplier.findUnique({
+        where: { id },
+
+        include: {
+          orders: true
+        }
+      })
+
+    if (!supplier) {
+      throw new NotFoundException(
+        'Supplier not found'
+      )
+    }
+
+    return supplier
   }
 
-  update(id: number, data: any) {
+  async update(
+    id: number,
+    data: UpdateSupplierDto
+  ) {
+
+    const supplier =
+      await this.prisma.supplier.findUnique({
+        where: { id }
+      })
+
+    if (!supplier) {
+      throw new NotFoundException(
+        'Supplier not found'
+      )
+    }
+
     return this.prisma.supplier.update({
       where: { id },
       data
     })
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+
+    const supplier =
+      await this.prisma.supplier.findUnique({
+        where: { id }
+      })
+
+    if (!supplier) {
+      throw new NotFoundException(
+        'Supplier not found'
+      )
+    }
+
     return this.prisma.supplier.delete({
       where: { id }
     })

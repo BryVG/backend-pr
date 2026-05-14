@@ -1,49 +1,99 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFraudAnalysisDto } from './dto/create-fraud-analysis.dto';
-import { UpdateFraudAnalysisDto } from './dto/update-fraud-analysis.dto';
+import {
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
+
+import { PrismaService }
+from '../../prisma/Prisma.service'
+
+import { CreateFraudAnalysisDto }
+from './dto/create-fraud-analysis.dto'
+
+import { UpdateFraudAnalysisDto }
+from './dto/update-fraud-analysis.dto'
 
 @Injectable()
 export class FraudAnalysisService {
- 
-   constructor(
+
+  constructor(
     private prisma: PrismaService
   ) {}
 
-  create(data: any) {
+  async create(
+    data: CreateFraudAnalysisDto
+  ) {
+
     return this.prisma.fraud_analysi.create({
       data
     })
   }
 
-  findAll() {
+  async findAll() {
+
     return this.prisma.fraud_analysi.findMany({
       include: {
-        items: true
+        purchaseItem: true
       }
     })
   }
 
-  findOne(id: number) {
-    return this.prisma.fraud_analysi.findUnique({
-      where: { id },
+  async findOne(id: number) {
 
-      include: {
-        items: true
+    const analysis =
+      await this.prisma.fraud_analysi.findUnique({
+        where: { id },
+
+        include: {
+        purchaseItem: true
       }
-    })
+      })
+
+    if (!analysis) {
+      throw new NotFoundException(
+        'Fraud analysis not found'
+      )
+    }
+
+    return analysis
   }
 
-  update(id: number, data: any) {
+  async update(
+    id: number,
+    data: UpdateFraudAnalysisDto
+  ) {
+
+    const analysis =
+      await this.prisma.fraud_analysi.findUnique({
+        where: { id }
+      })
+
+    if (!analysis) {
+      throw new NotFoundException(
+        'Fraud analysis not found'
+      )
+    }
+
     return this.prisma.fraud_analysi.update({
       where: { id },
       data
     })
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+
+    const analysis =
+      await this.prisma.fraud_analysi.findUnique({
+        where: { id }
+      })
+
+    if (!analysis) {
+      throw new NotFoundException(
+        'Fraud analysis not found'
+      )
+    }
+
     return this.prisma.fraud_analysi.delete({
       where: { id }
     })
   }
 }
-

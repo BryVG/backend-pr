@@ -1,5 +1,17 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../prisma/Prisma.service'
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException
+} from '@nestjs/common'
+
+import { PrismaService }
+from '../../prisma/Prisma.service'
+
+import { CreateProductDto }
+from './dto/create-product.dto'
+
+import { UpdateProductDto }
+from './dto/update-product.dto'
 
 @Injectable()
 export class ProductsService {
@@ -8,13 +20,30 @@ export class ProductsService {
     private prisma: PrismaService
   ) {}
 
-  create(data: any) {
+  async create(
+    data: CreateProductDto
+  ) {
+
+    const existingProduct =
+      await this.prisma.product.findFirst({
+        where: {
+          name: data.name
+        }
+      })
+
+    if (existingProduct) {
+      throw new BadRequestException(
+        'Product already exists'
+      )
+    }
+
     return this.prisma.product.create({
       data
     })
   }
 
-  findAll() {
+  async findAll() {
+
     return this.prisma.product.findMany({
       include: {
         items: true
@@ -22,24 +51,61 @@ export class ProductsService {
     })
   }
 
-  findOne(id: number) {
-    return this.prisma.product.findUnique({
-      where: { id },
+  async findOne(id: number) {
 
-      include: {
-        items: true
-      }
-    })
+    const product =
+      await this.prisma.product.findUnique({
+        where: { id },
+
+        include: {
+          items: true
+        }
+      })
+
+    if (!product) {
+      throw new NotFoundException(
+        'Product not found'
+      )
+    }
+
+    return product
   }
 
-  update(id: number, data: any) {
+  async update(
+    id: number,
+    data: UpdateProductDto
+  ) {
+
+    const product =
+      await this.prisma.product.findUnique({
+        where: { id }
+      })
+
+    if (!product) {
+      throw new NotFoundException(
+        'Product not found'
+      )
+    }
+
     return this.prisma.product.update({
       where: { id },
       data
     })
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+
+    const product =
+      await this.prisma.product.findUnique({
+        where: { id }
+      })
+
+    if (!product) {
+      throw new NotFoundException(
+        'Product not found'
+      )
+    }
+
     return this.prisma.product.delete({
       where: { id }
     })
