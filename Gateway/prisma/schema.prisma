@@ -20,8 +20,8 @@ model PurchaseOrder {
 
   createdAt     DateTime @default(now())
 
-  buyerId       Int?
-  buyer         Buyer?   @relation(fields: [buyerId], references: [id])
+  buyerId       Int
+  buyer         Buyer   @relation(fields: [buyerId], references: [id])
 
   supplierId    Int
   supplier       Supplier @relation(fields: [supplierId], references: [id])
@@ -29,6 +29,10 @@ model PurchaseOrder {
   totalAmount   Float?
 
   items         PurchaseItem[]
+
+  @@index([supplierId])
+  @@index([buyerId])
+  @@index([createdAt])
 }
 
 model PurchaseItem {
@@ -42,18 +46,29 @@ model PurchaseItem {
 
   quantity       Float
 
+  unit String? 
+  Measure String?
+
   unitPrice      Float
   totalPrice     Float
 
   fraudAnalysis  FraudAnalysis?
 
   createdAt      DateTime @default(now())
+  @@unique([purchaseOrderId, productId])
+
+  @@index([productId])
+  @@index([purchaseOrderId])
+  @@index([createdAt])
 }
 
 model Product {
   id          Int      @id @default(autoincrement())
 
   name        String
+
+  StandardUnit String?
+  StandardMeasure String?
 
   items       PurchaseItem[]
 }
@@ -65,6 +80,7 @@ model Supplier {
 
   orders      PurchaseOrder[]
 }
+
 
 model Buyer {
   id          Int      @id @default(autoincrement())
@@ -87,5 +103,8 @@ model FraudAnalysis {
   reason           String?
 
   createdAt        DateTime @default(now())
+
+  @@index([suspicious])
+  @@index([createdAt])
 }
 
