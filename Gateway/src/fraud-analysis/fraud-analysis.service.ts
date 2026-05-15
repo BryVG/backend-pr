@@ -23,14 +23,14 @@ export class FraudAnalysisService {
     data: CreateFraudAnalysisDto
   ) {
 
-    return this.prisma.fraud_analysi.create({
+    return this.prisma.fraudAnalysis.create({
       data
     })
   }
 
   async findAll() {
 
-    return this.prisma.fraud_analysi.findMany({
+    return this.prisma.fraudAnalysis.findMany({
       include: {
         purchaseItem: true
       }
@@ -40,7 +40,7 @@ export class FraudAnalysisService {
   async findOne(id: number) {
 
     const analysis =
-      await this.prisma.fraud_analysi.findUnique({
+      await this.prisma.fraudAnalysis.findUnique({
         where: { id },
 
         include: {
@@ -63,7 +63,7 @@ export class FraudAnalysisService {
   ) {
 
     const analysis =
-      await this.prisma.fraud_analysi.findUnique({
+      await this.prisma.fraudAnalysis.findUnique({
         where: { id }
       })
 
@@ -73,7 +73,7 @@ export class FraudAnalysisService {
       )
     }
 
-    return this.prisma.fraud_analysi.update({
+    return this.prisma.fraudAnalysis.update({
       where: { id },
       data
     })
@@ -82,7 +82,7 @@ export class FraudAnalysisService {
   async remove(id: number) {
 
     const analysis =
-      await this.prisma.fraud_analysi.findUnique({
+      await this.prisma.fraudAnalysis.findUnique({
         where: { id }
       })
 
@@ -92,7 +92,7 @@ export class FraudAnalysisService {
       )
     }
 
-    return this.prisma.fraud_analysi.delete({
+    return this.prisma.fraudAnalysis.delete({
       where: { id }
     })
   }

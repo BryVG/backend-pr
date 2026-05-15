@@ -15,7 +15,7 @@ export class CreateFraudAnalysisDto {
   fraudScore!: number
 
   @IsBoolean()
-  suspicious?: boolean
+  suspicious!: boolean
 
   @IsOptional()
   @IsString()
